@@ -26,7 +26,7 @@
 
         header {
             text-align: center;
-            padding: 20px 0 40px;
+            padding: 20px 0 25px;
         }
 
         header h1 {
@@ -39,6 +39,38 @@
         header p {
             color: #94a3b8;
             margin-top: 5px;
+        }
+
+        /* Search Bar Section */
+        .search-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 35px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 30px;
+            color: #f8fafc;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        #searchInput:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+            background-color: #1e293b;
         }
 
         /* Video Player Section */
@@ -119,6 +151,14 @@
             color: #94a3b8;
             margin-top: 5px;
         }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #94a3b8;
+            padding: 40px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -128,6 +168,13 @@
             <h1>My Cinema</h1>
             <p>Telegram ကနေ တိုက်ရိုက် Stream လုပ်ပြီး ကြည့်ရှုနိုင်သည်</p>
         </header>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="ရုပ်ရှင်အမည်ဖြင့် ရှာဖွေရန်...">
+            </div>
+        </div>
 
         <!-- Video Player Block -->
         <div class="player-section" id="playerSection">
@@ -147,24 +194,24 @@
     </div>
 
     <script>
-        // ရုပ်ရှင်စာရင်းကို ဒီနေရာမှာ မိမိစိတ်ကြိုက် ထည့်သွင်းနိုင်ပါတယ်
+        // ရုပ်ရှင်စာရင်းနှင့် Thumbnail ပုံများ ထည့်သွင်းရန်နေရာ
         const movies = [
             {
                 title: "Spiderman: No Way Home",
                 year: "2021",
-                poster: "https://image.tmdb.org/t/p/w500/1g0zzZ3RiF79Cc3m2ZUIftI6w4B.jpg", // ရုပ်ရှင် Poster ပုံ Link
-                streamUrl: "https://your-telegram-bot-direct-link-1.mp4" // Telegram ကနေရလာတဲ့ Direct Link ထည့်ရန်
+                thumbnail: "https://image.tmdb.org/t/p/w500/1g0zzZ3RiF79Cc3m2ZUIftI6w4B.jpg", // ဤနေရာတွင် Thumbnail ပုံ Link ထည့်ပါ
+                streamUrl: "https://your-telegram-bot-direct-link-1.mp4"
             },
             {
                 title: "Avatar: The Way of Water",
                 year: "2022",
-                poster: "https://image.tmdb.org/t/p/w500/t6zl0f2mXfsJ64837vA128VzZ64.jpg",
+                thumbnail: "https://image.tmdb.org/t/p/w500/t6zl0f2mXfsJ64837vA128VzZ64.jpg", // ဤနေရာတွင် Thumbnail ပုံ Link ထည့်ပါ
                 streamUrl: "https://your-telegram-bot-direct-link-2.mp4"
             },
             {
                 title: "John Wick: Chapter 4",
                 year: "2023",
-                poster: "https://image.tmdb.org/t/p/w500/vZloY6YST8txCslo9uYStw6IDf5.jpg",
+                thumbnail: "https://image.tmdb.org/t/p/w500/vZloY6YST8txCslo9uYStw6IDf5.jpg", // ဤနေရာတွင် Thumbnail ပုံ Link ထည့်ပါ
                 streamUrl: "https://your-telegram-bot-direct-link-3.mp4"
             }
         ];
@@ -173,21 +220,30 @@
         const playerSection = document.getElementById('playerSection');
         const videoPlayer = document.getElementById('videoPlayer');
         const playingTitle = document.getElementById('playingTitle');
+        const searchInput = document.getElementById('searchInput');
 
-        // Webpage ပေါ်မှာ ရုပ်ရှင် List ကို ပြသပေးသည့် Function
-        function loadMovies() {
-            movies.forEach((movie, index) => {
+        // Webpage ပေါ်မှာ ရုပ်ရှင်စာရင်းပြသပေးသည့် Function (Search လုပ်လျှင်လည်း ၎င်း Function ကပဲ ပြန်ဆွဲပေးမည်)
+        function loadMovies(moviesList = movies) {
+            // အရင်ရှိနေတဲ့ ဇာတ်ကားဟောင်းတွေကို ရှင်းထုတ်ခြင်း
+            movieGrid.innerHTML = '';
+            
+            // ရှာဖွေလို့ မတွေ့ရင် စာတန်းပြခြင်း
+            if (moviesList.length === 0) {
+                movieGrid.innerHTML = '<div class="no-results">ရှာဖွေမှုမတွေ့ရှိပါ။</div>';
+                return;
+            }
+
+            moviesList.forEach((movie) => {
                 const card = document.createElement('div');
                 card.className = 'movie-card';
                 card.innerHTML = `
-                    <img class="movie-poster" src="${movie.poster}" alt="${movie.title}">
+                    <img class="movie-poster" src="${movie.thumbnail}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/200x280?text=No+Image'">
                     <div class="movie-info">
                         <div class="movie-title">${movie.title}</div>
                         <div class="movie-year">${movie.year}</div>
                     </div>
                 `;
                 
-                // ဇာတ်ကားကို နှိပ်လိုက်ရင် Player ဖွင့်ပြီး Play ပေးမည့်အပိုင်း
                 card.onclick = () => {
                     playMovie(movie);
                 };
@@ -203,12 +259,24 @@
             videoPlayer.load();
             videoPlayer.play();
             
-            // Player ရှိတဲ့နေရာကို မျက်နှာပြင်အလိုအလျောက် ရွှေ့ပေးခြင်း
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Website စပွင့်တာနဲ့ ရုပ်ရှင်တွေကို ဆွဲတင်ပေးခြင်း
-        window.onload = loadMovies;
+        // --- Search Bar လုပ်ဆောင်ချက် အပိုင်း ---
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase().trim();
+            
+            // ရိုက်ထည့်လိုက်တဲ့ စာလုံးပါဝင်တဲ့ ရုပ်ရှင်ကို စစ်ထုတ်ခြင်း
+            const filteredMovies = movies.filter(movie => 
+                movie.title.toLowerCase().includes(keyword)
+            );
+            
+            // စစ်ထုတ်ပြီးသား ရုပ်ရှင်စာရင်းကို ပြန်ပြပေးခြင်း
+            loadMovies(filteredMovies);
+        });
+
+        // Website စပွင့်တာနဲ့ ရုပ်ရှင်အားလုံးကို အရင်ပြထားခြင်း
+        window.onload = () => loadMovies(movies);
     </script>
 </body>
 </html>
