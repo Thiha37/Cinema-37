@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cinema - Telegram Stream Movie Website</title>
+    <style>
+        /* Modern Dark Theme Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        /* Video Player Section */
+        .player-section {
+            display: none;
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+        }
+
+        .player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #000;
+        }
+
+        .player-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #playingTitle {
+            margin-top: 15px;
+            font-size: 1.3rem;
+            color: #38bdf8;
+        }
+
+        /* Movie Grid Section */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .movie-card {
+            background-color: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.2);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background-color: #334155;
+        }
+
+        .movie-info {
+            padding: 15px;
+        }
+
+        .movie-title {
+            font-size: 1rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-year {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>My Cinema</h1>
+            <p>Telegram ကနေ တိုက်ရိုက် Stream လုပ်ပြီး ကြည့်ရှုနိုင်သည်</p>
+        </header>
+
+        <!-- Video Player Block -->
+        <div class="player-section" id="playerSection">
+            <div class="player-wrapper">
+                <video id="videoPlayer" controls autoplay controlsList="nodownload">
+                    <source src="" type="video/mp4">
+                    သင့် Browser သည် ဗီဒီယို Play ရန် အဆင်မပြေပါု။
+                </video>
+            </div>
+            <h3 id="playingTitle">ရုပ်ရှင်အမည်</h3>
+        </div>
+
+        <!-- Movie List Grid -->
+        <div class="movie-grid" id="movieGrid">
+            <!-- ဇာတ်ကားကတ်ပြားများကို JavaScript ကနေ ဒီနေရာမှာ လာထည့်ပေးပါလိမ့်မယ် -->
+        </div>
+    </div>
+
+    <script>
+        // ရုပ်ရှင်စာရင်းကို ဒီနေရာမှာ မိမိစိတ်ကြိုက် ထည့်သွင်းနိုင်ပါတယ်
+        const movies = [
+            {
+                title: "Spiderman: No Way Home",
+                year: "2021",
+                poster: "https://image.tmdb.org/t/p/w500/1g0zzZ3RiF79Cc3m2ZUIftI6w4B.jpg", // ရုပ်ရှင် Poster ပုံ Link
+                streamUrl: "https://your-telegram-bot-direct-link-1.mp4" // Telegram ကနေရလာတဲ့ Direct Link ထည့်ရန်
+            },
+            {
+                title: "Avatar: The Way of Water",
+                year: "2022",
+                poster: "https://image.tmdb.org/t/p/w500/t6zl0f2mXfsJ64837vA128VzZ64.jpg",
+                streamUrl: "https://your-telegram-bot-direct-link-2.mp4"
+            },
+            {
+                title: "John Wick: Chapter 4",
+                year: "2023",
+                poster: "https://image.tmdb.org/t/p/w500/vZloY6YST8txCslo9uYStw6IDf5.jpg",
+                streamUrl: "https://your-telegram-bot-direct-link-3.mp4"
+            }
+        ];
+
+        const movieGrid = document.getElementById('movieGrid');
+        const playerSection = document.getElementById('playerSection');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const playingTitle = document.getElementById('playingTitle');
+
+        // Webpage ပေါ်မှာ ရုပ်ရှင် List ကို ပြသပေးသည့် Function
+        function loadMovies() {
+            movies.forEach((movie, index) => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <img class="movie-poster" src="${movie.poster}" alt="${movie.title}">
+                    <div class="movie-info">
+                        <div class="movie-title">${movie.title}</div>
+                        <div class="movie-year">${movie.year}</div>
+                    </div>
+                `;
+                
+                // ဇာတ်ကားကို နှိပ်လိုက်ရင် Player ဖွင့်ပြီး Play ပေးမည့်အပိုင်း
+                card.onclick = () => {
+                    playMovie(movie);
+                };
+                
+                movieGrid.appendChild(card);
+            });
+        }
+
+        function playMovie(movie) {
+            playingTitle.innerText = `${movie.title} (${movie.year})`;
+            videoPlayer.src = movie.streamUrl;
+            playerSection.style.display = 'block';
+            videoPlayer.load();
+            videoPlayer.play();
+            
+            // Player ရှိတဲ့နေရာကို မျက်နှာပြင်အလိုအလျောက် ရွှေ့ပေးခြင်း
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Website စပွင့်တာနဲ့ ရုပ်ရှင်တွေကို ဆွဲတင်ပေးခြင်း
+        window.onload = loadMovies;
+    </script>
+</body>
+</html>
