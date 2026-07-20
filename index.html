@@ -198,63 +198,355 @@
         const movies = [
             {
                 title: "Spiderman: No Way Home",
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema 37 - Streaming Website</title>
+    <style>
+        /* Modern Dark Theme Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        /* Search Bar Section */
+        .search-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 30px;
+            color: #f8fafc;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        #searchInput:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+            background-color: #1e293b;
+        }
+
+        /* Category Tabs Section */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background-color: #1e293b;
+            color: #94a3b8;
+            border: 2px solid #334155;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: #f8fafc;
+            border-color: #38bdf8;
+        }
+
+        .tab-btn.active {
+            background-color: #38bdf8;
+            color: #0f172a;
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Video Player Section */
+        .player-section {
+            display: none;
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+        }
+
+        .player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #000;
+        }
+
+        .player-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #playingTitle {
+            margin-top: 15px;
+            font-size: 1.3rem;
+            color: #38bdf8;
+        }
+
+        /* Movie Grid Section */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .movie-card {
+            background-color: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.2);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(15, 23, 42, 0.85);
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            backdrop-filter: blur(4px);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background-color: #334155;
+        }
+
+        .movie-info {
+            padding: 15px;
+        }
+
+        .movie-title {
+            font-size: 1rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-year {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #94a3b8;
+            padding: 40px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>My Cinema</h1>
+            <p>Cinema 37</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="ရုပ်ရှင်/ဇာတ်လမ်းတွဲ/ရုပ်သံလိုင်း အမည်ဖြင့် ရှာဖွေရန်...">
+            </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+            <button class="tab-btn active" data-category="all">အားလုံး</button>
+            <button class="tab-btn" data-category="movie">Movies</button>
+            <button class="tab-btn" data-category="series">Series</button>
+            <button class="tab-btn" data-category="channel">Channels</button>
+        </div>
+
+        <!-- Video Player Block -->
+        <div class="player-section" id="playerSection">
+            <div class="player-wrapper">
+                <video id="videoPlayer" controls autoplay controlsList="nodownload">
+                    <source src="" type="video/mp4">
+                    သင့် Browser သည် ဗီဒီယို Play ရန် အဆင်မပြေပါ။
+                </video>
+            </div>
+            <h3 id="playingTitle">ရုပ်ရှင်အမည်</h3>
+        </div>
+
+        <!-- Movie List Grid -->
+        <div class="movie-grid" id="movieGrid">
+            <!-- ဇာတ်ကားကတ်ပြားများကို JavaScript ကနေ ဒီနေရာမှာ လာထည့်ပေးပါလိမ့်မယ် -->
+        </div>
+    </div>
+
+    <script>
+        // Data စာရင်း - category နေရာတွင် 'movie', 'series', 'channel' ဟု ခွဲခြားပေးရပါမည်
+        const mediaList = [
+            {
+                title: "Spiderman: No Way Home",
                 year: "2021",
-                thumbnail: "https://image.tmdb.org/t/p/w500/1g0zzZ3RiF79Cc3m2ZUIftI6w4B.jpg", // ဤနေရာတွင် Thumbnail ပုံ Link ထည့်ပါ
+                category: "movie",
+                thumbnail: "https://image.tmdb.org/t/p/w500/1g0zzZ3RiF79Cc3m2ZUIftI6w4B.jpg",
                 streamUrl: "https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8"
             },
             {
                 title: "Avatar: The Way of Water",
                 year: "2022",
-                thumbnail: "https://image.tmdb.org/t/p/w500/t6zl0f2mXfsJ64837vA128VzZ64.jpg", // ဤနေရာတွင် Thumbnail ပုံ Link ထည့်ပါ
+                category: "movie",
+                thumbnail: "https://image.tmdb.org/t/p/w500/t6zl0f2mXfsJ64837vA128VzZ64.jpg",
                 streamUrl: "https://your-telegram-bot-direct-link-2.mp4"
             },
             {
                 title: "John Wick: Chapter 4",
                 year: "2023",
-                thumbnail: "https://stream.zustic.com/watch/MjBlOGZhMjAtOWZlZi00NDkyLWFiZjEtODY1NTdkOTI5Y2Vk", // ဤနေရာတွင် Thumbnail ပုံ Link ထည့်ပါ
+                category: "movie",
+                thumbnail: "https://image.tmdb.org/t/p/w500/vZloY6YST8txCslo9uYStw6IDf5.jpg",
                 streamUrl: "https://apgy.in/yt/MXQ4Y4vK0IU"
+            },
+            {
+                title: "Loki Season 2",
+                year: "2023",
+                category: "series",
+                thumbnail: "https://image.tmdb.org/t/p/w500/voL1s634B03a.jpg",
+                streamUrl: "https://your-telegram-bot-series-link.mp4"
+            },
+            {
+                title: "Live Sports Channel 24/7",
+                year: "LIVE",
+                category: "channel",
+                thumbnail: "https://via.placeholder.com/200x280?text=Live+Channel",
+                streamUrl: "https://your-telegram-live-stream.mp4"
             }
         ];
+
+        let currentCategory = 'all';
 
         const movieGrid = document.getElementById('movieGrid');
         const playerSection = document.getElementById('playerSection');
         const videoPlayer = document.getElementById('videoPlayer');
         const playingTitle = document.getElementById('playingTitle');
         const searchInput = document.getElementById('searchInput');
+        const tabBtns = document.querySelectorAll('.tab-btn');
 
-        // Webpage ပေါ်မှာ ရုပ်ရှင်စာရင်းပြသပေးသည့် Function (Search လုပ်လျှင်လည်း ၎င်း Function ကပဲ ပြန်ဆွဲပေးမည်)
-        function loadMovies(moviesList = movies) {
-            // အရင်ရှိနေတဲ့ ဇာတ်ကားဟောင်းတွေကို ရှင်းထုတ်ခြင်း
+        // Category အမျိုးအစားအလိုက် Badge စာသားပြရန်
+        const categoryLabels = {
+            movie: "Movie",
+            series: "Series",
+            channel: "Channel"
+        };
+
+        // Data များကို စစ်ထုတ်ပြီး Grid ပေါ်တွင် ပြသပေးသည့် Function
+        function renderMedia() {
+            const keyword = searchInput.value.toLowerCase().trim();
+            
+            // Search မူတည်၍ Filter စစ်ခြင်း
+            const filteredData = mediaList.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(keyword);
+                const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
+
+                if (keyword.length > 0) {
+                    return matchesSearch;
+                }
+                
+                return matchesCategory;
+            });
+
             movieGrid.innerHTML = '';
             
-            // ရှာဖွေလို့ မတွေ့ရင် စာတန်းပြခြင်း
-            if (moviesList.length === 0) {
-                movieGrid.innerHTML = '<div class="no-results">ရှာဖွေမှုမတွေ့ရှိပါ။</div>';
+            if (filteredData.length === 0) {
+                movieGrid.innerHTML = '<div class="no-results">ရှာဖွေမှု မတွေ့ရှိပါ။</div>';
                 return;
             }
 
-            moviesList.forEach((movie) => {
+            filteredData.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = 'movie-card';
                 card.innerHTML = `
-                    <img class="movie-poster" src="${movie.thumbnail}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/200x280?text=No+Image'">
+                    <span class="category-badge">${categoryLabels[item.category] || item.category}</span>
+                    <img class="movie-poster" src="${item.thumbnail}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/200x280?text=No+Image'">
                     <div class="movie-info">
-                        <div class="movie-title">${movie.title}</div>
-                        <div class="movie-year">${movie.year}</div>
+                        <div class="movie-title">${item.title}</div>
+                        <div class="movie-year">${item.year}</div>
                     </div>
                 `;
                 
-                card.onclick = () => {
-                    playMovie(movie);
-                };
-                
+                card.onclick = () => playMedia(item);
                 movieGrid.appendChild(card);
             });
         }
 
-        function playMovie(movie) {
-            playingTitle.innerText = `${movie.title} (${movie.year})`;
-            videoPlayer.src = movie.streamUrl;
+        function playMedia(item) {
+            playingTitle.innerText = `${item.title} (${item.year})`;
+            videoPlayer.src = item.streamUrl;
             playerSection.style.display = 'block';
             videoPlayer.load();
             videoPlayer.play();
@@ -262,21 +554,23 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- Search Bar လုပ်ဆောင်ချက် အပိုင်း ---
-        searchInput.addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase().trim();
-            
-            // ရိုက်ထည့်လိုက်တဲ့ စာလုံးပါဝင်တဲ့ ရုပ်ရှင်ကို စစ်ထုတ်ခြင်း
-            const filteredMovies = movies.filter(movie => 
-                movie.title.toLowerCase().includes(keyword)
-            );
-            
-            // စစ်ထုတ်ပြီးသား ရုပ်ရှင်စာရင်းကို ပြန်ပြပေးခြင်း
-            loadMovies(filteredMovies);
+        // --- Search Bar Event ---
+        searchInput.addEventListener('input', renderMedia);
+
+        // --- Category Tabs Event ---
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                currentCategory = btn.dataset.category;
+                renderMedia();
+            });
         });
 
-        // Website စပွင့်တာနဲ့ ရုပ်ရှင်အားလုံးကို အရင်ပြထားခြင်း
-        window.onload = () => loadMovies(movies);
+        // စတင်ပွင့်ချိန်တွင် Render လုပ်ပေးခြင်း
+        window.onload = renderMedia;
     </script>
 </body>
 </html>
+
